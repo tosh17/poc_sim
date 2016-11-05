@@ -6,6 +6,7 @@
 package th.pocersimulyator;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
@@ -15,7 +16,7 @@ import java.util.Random;
  */
 public class Cards {
 
-    private final List<OneCard> cards = new ArrayList<>();
+    private final List<OneCard> cards = new ArrayList<>(); //ArrayList LinkedList
 
     Cards() {
         for (int i = 0; i < 4; i++) {
