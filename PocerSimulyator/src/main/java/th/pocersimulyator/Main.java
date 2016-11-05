@@ -26,12 +26,17 @@ public class Main {
         stol.itog();
 
         Player p[];
-        p = new Player[4];
+        p = new Player[9];
         p[0] = new Player("Tosh17");
-        p[1] = new Player("какаш");
-        p[2] = new Player("свин");
-        p[3] = new Player("лох");
-        for (int i = 0; i < 100000; i++) {
+        p[1] = new Player("Второй");
+        p[2] = new Player("Третий");
+        p[3] = new Player("четвертый");
+        p[4] = new Player("Пятый");
+        p[5] = new Player("Шестой");
+        p[6] = new Player("Седьмой");
+        p[7] = new Player("Восьмой");
+        p[8] = new Player("Девятый");
+        for (int i = 0; i < 1000; i++) {
             stol = new Table(p);
             stol.preflop();
             stol.flop();

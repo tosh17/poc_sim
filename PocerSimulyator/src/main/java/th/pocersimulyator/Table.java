@@ -96,12 +96,16 @@ public class Table {
     public void itog() {
         Player lider;
         int wincost = 0;
-        for (int i = 0; i < players.size(); i++) {
-            for (int j = i; j < players.size(); j++) {
+        for (int i = 0; i < players.size()-1; i++) {
+            while(i < players.size()-1 && !players.get(i).getStatus()) i++;
+            for (int j = i+1; j < players.size(); j++) {
                 int b = players.get(i).GetCombination().eq(players.get(j).GetCombination());
                 switch (b) {
                     case -1:
                         players.get(i).setStatus(false);
+                        j=players.size();
+                       
+                        
                         break;
                     case 1:
                         players.get(j).setStatus(false);
