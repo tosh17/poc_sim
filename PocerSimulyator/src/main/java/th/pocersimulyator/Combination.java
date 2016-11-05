@@ -15,10 +15,12 @@ public class Combination {
 
     int card[][] = new int[5][2];
     double cost;
-    int bestcard[][] = new int[5][2];
-    int bestcost[][] = new int[2][5];
-    int temper = 0;
-    int tempcoint = 0;
+    //int bestcard[][] = new int[5][2];
+    private int bestcost[][] = new int[2][5];
+    private int temper = 0;
+    private int tempcoint = 0;
+    private int tempsum;
+    private int maxsum;
 
     Combination(int code0, int code1, int code2, int code3, int code4) {
         int a[] = {code0, code1, code2, code3, code4};
@@ -61,37 +63,45 @@ public class Combination {
         String str = "";
         switch (x) {
             case 1:
-                str = "Старшая Карта";
+                str = "Старшая Карта " + convertcard(bestcost[1][0], 0);
                 break;
             case 2:
-                str = "Пара";
+                str = "Пара " + convertcard(bestcost[1][0], 0) + " и дополнительной картой " + convertcard(bestcost[1][1], 0);
                 break;
             case 3:
-                str = "2 пары";
+                str = "2 пары на " + convertcard(bestcost[1][0], 0) + " и " + convertcard(bestcost[1][1], 0) + " + доп " + convertcard(bestcost[1][2], 0);
                 break;
             case 4:
-                str = "СЕТ";
+                str = "СЕТ на " + convertcard(bestcost[1][0], 0);
                 break;
             case 5:
-                str = "стрит";
+                str = "стрит со старшей картой " + convertcard(bestcost[1][0], 0);
                 break;
             case 6:
-                str = "флэш";
+                str = "флэш со старшей картой " + convertcard(bestcost[1][0], 0);
                 break;
             case 7:
-                str = "ФуллХоус";
+                str = "ФуллХаус на " + convertcard(bestcost[1][0], 0) + " и " + convertcard(bestcost[1][1], 0);
                 break;
             case 8:
-                str = "Каре";
+                str = "Каре на " + convertcard(bestcost[1][0], 0) + " и дополнительной картой " + convertcard(bestcost[1][1], 0);
                 break;
             case 9:
-                str = "стрит-флэш";
+                str = "стрит-флэш со старшей картой " + convertcard(bestcost[1][0], 0);
                 break;
             case 10:
                 str = "флеш-роял";
                 break;
         }
         return str;
+    }
+
+    private String convertcard(int n, int position) {
+        ConvertCard temp = new ConvertCard();
+        if (position == 0) {
+            return temp.getNumberRus(n);
+        }
+        return temp.getSuitRus(n);
     }
 
     private void comb6to5(int b[]) {
@@ -161,61 +171,97 @@ public class Combination {
             }
         }
         tempCount(count);
-        if (flushRoyal()) {
+        if (flushRoyal()) {  // Флеш рояль, дополнительные карты не требуются
             bestcost[0][0] = 10;
-        } else if (bestcost[0][0] < 10 && streetFlush()) {
-            bestcost[0][0] = 9;
+        } else if (bestcost[0][0] < 10 && streetFlush()) { // Комбинация стритфлеш + определяем старшую карту
+
+            bestcostn(9);
             bestcost[1][0] = card[4][0];
 
-        } else if (bestcost[0][0] < 9 && kare()) {
-            bestcost[0][0] = 8;
-            bestcost[1][0] = card[3][0];
-
-        } else if (bestcost[0][0] < 8 && fullHouse()) {
-            bestcost[0][0] = 7;
-            bestcost[1][0] = card[3][0];
-            if (card[1][0] == card[3][0]) {
-                bestcost[1][1] = card[4][0];
-            } else {
-                bestcost[1][1] = card[1][0];
+        } else if (bestcost[0][0] < 9 && kare()) {// Комбинация Каре + допл карта
+            bestcostn(8);
+            bestcost[1][0] = card[2][0];
+            for (int i = 0; i < 5; i++) { // Проверка на то что это старшая допл карта
+                if (count[i] == 4) {
+                    bestcost[1][0] = card[i][0];
+                } else if (bestcost[1][1] < card[i][0]) {
+                    bestcost[1][1] = card[i][0];
+                }
             }
-        } else if (bestcost[0][0] < 7 && flush()) {
-            bestcost[0][0] = 6;
+
+        } else if (bestcost[0][0] < 8 && fullHouse()) { // фулхаус
+            bestcostn(7);
+            if (bestcost[1][0] <= card[2][0]) {  // Возможные комбинации 22333 или 33322 средняя карта из сета. Проверка что сет на максимуме
+                bestcost[1][0] = card[2][0];
+                if (bestcost[1][0] == card[0][0]) { // проверка комбинации если 33322
+                    if (bestcost[1][1] < card[4][0]) {
+                        bestcost[1][1] = card[4][0];
+                    }
+                } else // tckb 22333
+                {
+                    if (bestcost[1][1] < card[1][0]) {
+                        bestcost[1][1] = card[1][0];
+                    }
+                }
+            }
+
+        } else if (bestcost[0][0] < 7 && flush()) { // Комбинация флеш
+            bestcostn(6);
+            boolean b = true;
             for (int i = 0; i < 5; i++) {
-                bestcost[1][i] = card[4 - i][0];
+                if (bestcost[1][i] > card[4 - i][0]) {
+                    b = false;
+                    break;
+                }
+            }
+            if (b) {
+                for (int i = 0; i < 5; i++) {
+                    bestcost[1][i] = card[4 - i][0];
+                }
             }
 
-        } else if (bestcost[0][0] < 6 && street()) {
-            bestcost[0][0] = 5;
-            bestcost[1][0] = card[4][0];
+        } else if (bestcost[0][0] < 6 && street()) { // Комбинация стрит
+            bestcostn(5);
+            if (bestcost[1][0] < card[4][0]) {
+                bestcost[1][0] = card[4][0];
+            }
 
-        } else if (bestcost[0][0] < 5 && set()) {
-            bestcost[0][0] = 4;
-            int temp = 2;
+        } else if (bestcost[0][0] < 5 && set()) { // Комбинация Сет
+            bestcostn(4);
+            int temp = 2, t1, t2;
+            int t[] = new int[2];
             for (int i = 0; i < 5; i++) {
                 if (count[i] == 3) {
                     bestcost[1][0] = card[i][0];
                 } else {
-                    bestcost[1][--temp] = card[i][0];
+                    t[--temp] = card[i][0];
+                }
+                if (t[0] >= bestcost[1][1] && t[1] >= bestcost[1][2]) {
+                    bestcost[1][1] = t[0];
+                    bestcost[1][2] = t[1];
                 }
             }
 
         } else if (bestcost[0][0] < 4 && twoPair()) {
-            bestcost[0][0] = 3;
-            bestcost[1][0] = card[4][0];
-            for (int i = 4; i >= 0; i--) {
-                if (count[i] == 2 && card[i][0] == bestcost[1][0]) {
-                    bestcost[1][0] = card[i][0];
-                } else if (count[i] == 2 && card[i][0] != bestcost[1][0]) {
-                    bestcost[1][1] = card[i][0];
+            bestcostn(3);
+            int t1 = 0, t2 = 0, t3 = 0;
+            for (int i = 0; i < 5; i++) {
+                if (t2 == 0 && count[i] == 2) {
+                    t2 = card[i][0];
+                } else if (t2 != card[i][0] && count[i] == 2) {
+                    t1 = card[i][0];
                 } else {
-                    bestcost[1][3] = card[i][0];
+                    t3 = card[i][0];
                 }
+            }
+            if (t3 >= bestcost[1][2] && t2 >= bestcost[1][1] && t1 >= bestcost[1][0]) {
+                bestcost[1][0] = t1;
+                bestcost[1][1] = t2;
+                bestcost[1][2] = t3;
 
             }
-
         } else if (bestcost[0][0] < 3 && pair()) {
-            bestcost[0][0] = 2;
+            bestcostn(2);
             int temp = 0;
             for (int i = 4; i >= 0; i--) {
                 if (count[i] == 2) {
@@ -226,9 +272,18 @@ public class Combination {
             }
 
         } else if (bestcost[0][0] < 2 && one()) {
-            bestcost[0][0] = 1;
+            bestcostn(1);
+            boolean b = true;
             for (int i = 0; i < 5; i++) {
-                bestcost[1][i] = card[4 - i][0];
+                if (bestcost[1][i] > card[4 - i][0]) {
+                    b = false;
+                    break;
+                }
+            }
+            if (b) {
+                for (int i = 0; i < 5; i++) {
+                    bestcost[1][i] = card[4 - i][0];
+                }
             }
 
         }
@@ -283,9 +338,13 @@ public class Combination {
 
     private void tempCount(int count[]) {
         tempcoint = 0;
+        tempsum = 0;
+
         for (int i = 0; i < 5; i++) {
             tempcoint += count[i];
+            tempsum += card[i][0];
         }
+
     }
 
     private boolean flush() {
@@ -369,7 +428,7 @@ public class Combination {
         comb2 = com.getCombinate();
         if (comb1 > comb2) {
             return 1;
-        } else if (comb1 > comb2) {
+        } else if (comb1 < comb2) {
             return -1;
         } else {
             temp1 = this.getDopCombinate(0);
@@ -550,5 +609,14 @@ public class Combination {
 
         }
         return 0;
+    }
+
+    private void bestcostn(int n) { // Если переходим в более высокий класс то зануляем доп карты
+        if (bestcost[0][0] < n) {
+            bestcost[0][0] = n;
+            for (int i = 0; i < 5; i++) {
+                bestcost[1][i] = 0;
+            }
+        }
     }
 }
