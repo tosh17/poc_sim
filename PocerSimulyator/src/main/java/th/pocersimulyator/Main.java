@@ -16,27 +16,20 @@ public class Main {
      */
     public static void main(String[] args) {
         // TODO code application logic here
-        Player tosh = new Player("Tosh17");
-        Player barin = new Player("какашка");
-        Table stol = new Table(tosh, barin);
-        stol.preflop();
-        stol.flop();
-        stol.tern();
-        stol.river();
-        stol.itog();
-
+        Table stol;
         Player p[];
-        p = new Player[9];
+        p = new Player[3];
         p[0] = new Player("Tosh17");
         p[1] = new Player("Второй");
         p[2] = new Player("Третий");
-        p[3] = new Player("четвертый");
+ /*       p[3] = new Player("четвертый");
         p[4] = new Player("Пятый");
         p[5] = new Player("Шестой");
         p[6] = new Player("Седьмой");
         p[7] = new Player("Восьмой");
-        p[8] = new Player("Девятый");
+        p[8] = new Player("Девятый");         */
         for (int i = 0; i < 1000; i++) {
+            System.out.println("======================" + i + "====================");
             stol = new Table(p);
             stol.preflop();
             stol.flop();
@@ -49,5 +42,12 @@ public class Main {
             System.out.println("Игрок " + i.getName() + " имеет " + i.getWin() + " побед");
         }
 
+        System.out.println("  ");
+        System.out.println("  ");
+        System.out.println("  ");
+        System.out.println("  ");
+        int k[] = {24, 50};
+        TerverSimpl c = new TerverSimpl(k);
+        c.printStat();
     }
 }

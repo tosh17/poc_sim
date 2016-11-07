@@ -62,6 +62,17 @@ public class Player {
         return str;
     }
 
+    public void showTerVer() {
+        String str = "";
+        int a[] = new int[hand.size()];
+        TerverSimpl ter;
+        for (int i = 0; i < hand.size(); i++) {
+            a[i] = hand.get(i).getCode();
+        }
+        ter=new TerverSimpl(a);
+        ter.printStat();
+    }
+
     public void setStatus(boolean b) {
         this.status = b;
     }

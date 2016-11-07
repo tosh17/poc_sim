@@ -145,6 +145,7 @@ public class Table {
             System.out.println("Игрок " + p.getName() + "  имеет ");
             System.out.println(p.showHand());
             System.out.println("  Имеет комбинацию    " + p.GetCombination().getCombName());
+            p.showTerVer();
 
         }
     }
