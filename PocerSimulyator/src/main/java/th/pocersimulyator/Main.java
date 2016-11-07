@@ -22,13 +22,13 @@ public class Main {
         p[0] = new Player("Tosh17");
         p[1] = new Player("Второй");
         p[2] = new Player("Третий");
- /*       p[3] = new Player("четвертый");
+        /*       p[3] = new Player("четвертый");
         p[4] = new Player("Пятый");
         p[5] = new Player("Шестой");
         p[6] = new Player("Седьмой");
         p[7] = new Player("Восьмой");
         p[8] = new Player("Девятый");         */
-        for (int i = 0; i < 1000; i++) {
+ /*      for (int i = 0; i < 1000; i++) {
             System.out.println("======================" + i + "====================");
             stol = new Table(p);
             stol.preflop();
@@ -41,13 +41,19 @@ public class Main {
         for (Player i : p) {
             System.out.println("Игрок " + i.getName() + " имеет " + i.getWin() + " побед");
         }
+         */
+        ConvertCard c = new ConvertCard();
+        for (int i = 0; i < 51; i++) {
+            for (int j = i+1; j < 52; j++) {
+                System.out.println("  ");
+                System.out.println("  ");
+                System.out.println(c.getCard(i) + " " + c.getCard(j));
+                System.out.println("  ");
 
-        System.out.println("  ");
-        System.out.println("  ");
-        System.out.println("  ");
-        System.out.println("  ");
-        int k[] = {24, 50};
-        TerverSimpl c = new TerverSimpl(k);
-        c.printStat();
+                int k[] = {i, j};
+                TerverSimpl cc = new TerverSimpl(k);
+                cc.printStat();
+            }
+        }
     }
 }
