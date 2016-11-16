@@ -40,6 +40,21 @@ public class Cards {
         }
     }
 
+    public void chiter(int n, int count, int code1, int code2) {
+        OneCard temp1;
+        OneCard temp2;
+        for (int i = 0; i < 52; i++) {
+            if (cards.get(i).getCode() == code1 || cards.get(i).getCode() == code2) {
+                if(i!=n && n<2*count) {
+                temp1 = cards.get(i);
+                temp2 = cards.get(n);
+                cards.set(n, temp1);
+                cards.set(i, temp2);
+                n = n + count;}
+            }
+        }
+    }
+
     public void getInfoCard(int code) {
         cards.get(code).getInfo();
     }

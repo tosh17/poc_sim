@@ -107,67 +107,35 @@ public class MyDb {
     }
 
     public void createBase(int p, int c1, int c2) throws SQLException {
-        select();
-        String str = "p" + p + "i" + c1 + "j" + c2;
-        pstmt = con.prepareStatement("CREATE TABLE " + str + " ("
+      
+        //String str = "p" + p + "i" + c1 + "j" + c2;
+        pstmt = con.prepareStatement("CREATE TABLE flop ("
+                + "id smallint NOT NULL,"
                 + "flop1 smallint NOT NULL,"
                 + "flop2 smallint NOT NULL,"
-                + "flop3 smallint NOT NULL,"
-                + "tern smallint NOT NULL,"
-                + "river smallint NOT NULL,"
-                + "countgame smallint NOT NULL,"
-                + "win smallint NOT NULL,wcomb1 "
-                + "smallint NOT NULL,"
-                + "wcomb2 smallint NOT NULL,"
-                + "wcomb3 smallint NOT NULL,"
-                + "wcomb4 smallint NOT NULL,"
-                + "wcomb5 smallint NOT NULL,"
-                + "wcomb6 smallint NOT NULL,"
-                + "wcomb7 smallint NOT NULL,"
-                + "wcomb8 smallint NOT NULL,"
-                + "wcomb9 smallint NOT NULL,"
-                + "wcomb10 smallint NOT NULL)");
+                + "flop3 smallint NOT NULL)");
         //pstmt.setString(1, str);
         int rowCount = pstmt.executeUpdate();
-
-        for (int i1 = 0; i1 < 52; i1++) {
+        int id = 0;
+        for (int i1 = 0; i1 < 50; i1++) {
             for (int i2 = i1 + 1; i2 < 51; i2++) {
-                for (int i3 = i2 + 1; i3 < 50; i3++) {
-                    for (int i4 = 0; i4 < 52; i4++) {
-                        for (int i5 = 0; i5 < 52; i5++) {
-                            int a[] = {c1, c2, i1, i2, i3, i4, i5};
-                            if (notik(a)) {
-                                pstmt = con.prepareStatement("INSERT INTO " + str + " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-                                int i = 0;
-                                pstmt.setInt(++i, i1);
-                                pstmt.setInt(++i, i2);
-                                pstmt.setInt(++i, i3);
-                                pstmt.setInt(++i, i4);
-                                pstmt.setInt(++i, i4);
-                                pstmt.setInt(++i, 0);
-                                pstmt.setInt(++i, 0);
-                                pstmt.setInt(++i, 0);
-                                pstmt.setInt(++i, 0);
-                                pstmt.setInt(++i, 0);
-                                pstmt.setInt(++i, 0);
-                                pstmt.setInt(++i, 0);
-                                pstmt.setInt(++i, 0);
-                                pstmt.setInt(++i, 0);
-                                pstmt.setInt(++i, 0);
-                                pstmt.setInt(++i, 0);
-                                pstmt.setInt(++i, 0);
-                                
-                                rowCount = pstmt.executeUpdate();
-                            }
-
-                        }
-                    }
+                for (int i3 = i2 + 1; i3 < 52; i3++) {
+                    pstmt = con.prepareStatement("INSERT INTO flop VALUES (?,?,?,?)");
+                    int i = 0;
+                    pstmt.setInt(++i, ++id);
+                    pstmt.setInt(++i, i1);
+                    pstmt.setInt(++i, i2);
+                    pstmt.setInt(++i, i3);
+                    rowCount = pstmt.executeUpdate();
                 }
+
             }
         }
     }
 
-    private boolean notik(int a[]) {
+
+
+private boolean notik(int a[]) {
         int x = a.length;
         for (int i = 0; i < x - 1; i++) {
             for (int j = i + 1; j < x; j++) {

@@ -19,8 +19,9 @@ public class Main {
      */
     public static void main(String[] args) throws ClassNotFoundException, SQLException {
         // TODO code application logic here
-         playGame(5,1000);
+        playGame(6,1000);
 //        terVerSimpl5card();
+   // creba();
     }
 
     private static void playGame(int play, int count) throws ClassNotFoundException, SQLException {
@@ -90,5 +91,10 @@ public class Main {
             }
         }
         base.close();
+    }
+    private static void creba() throws SQLException, ClassNotFoundException{
+    MyDb base = new MyDb();
+    base.createBase(3, 0, 20);
+    base.close();
     }
 }

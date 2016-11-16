@@ -32,7 +32,7 @@ public class Table {
         System.out.println("Перемешиваем колоду");
         karts = new Cards();
         karts.sort();
-
+        
     }
 
     Table(Player play[]) {
@@ -47,6 +47,8 @@ public class Table {
         System.out.println("Открываем новую и Перемешиваем колоду");
         karts = new Cards();
         karts.sort();
+        karts.chiter(0, play.length, 0, 13);
+
     }
 
     public void preflop() {
@@ -69,7 +71,7 @@ public class Table {
         for (Player p : players) {
             p.givetable(onTable.get(0), onTable.get(1), onTable.get(2));
         }
-        showAllHandsPlus();
+       showAllHandsPlus();
         showOnTables();
     }
 
@@ -91,7 +93,7 @@ public class Table {
         for (Player p : players) {
             p.givetable(onTable.get(4));
         }
-        showAllHandsPlus();
+       showAllHandsPlus();
         showOnTables();
     }
 
@@ -136,7 +138,8 @@ public class Table {
 
         }
 
-        for (Player p : players) {
+      //  for (Player p : players) {
+        Player p= players.get(0);
             if (p.getStatus()) {
                 ilog[1] = 1;
             } else {
@@ -176,7 +179,7 @@ public class Table {
             }
             mass.clear();
             base.gameLog(ilog);
-                   }
+  //                 }
         base.close();
     }
 
