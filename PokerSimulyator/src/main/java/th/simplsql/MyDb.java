@@ -109,7 +109,11 @@ public class MyDb {
     public void createBase(int p, int c1, int c2) throws SQLException {
       
         //String str = "p" + p + "i" + c1 + "j" + c2;
-        pstmt = con.prepareStatement("CREATE TABLE flop ("
+        
+    }
+
+    public void createFlopTable() throws SQLException{
+    pstmt = con.prepareStatement("CREATE TABLE flop ("
                 + "id smallint NOT NULL,"
                 + "flop1 smallint NOT NULL,"
                 + "flop2 smallint NOT NULL,"
@@ -132,8 +136,6 @@ public class MyDb {
             }
         }
     }
-
-
 
 private boolean notik(int a[]) {
         int x = a.length;

@@ -5,8 +5,11 @@
  */
 package th.pocersimulyator;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import th.simplsql.*;
+import th.sql.*;
 
 /**
  *
@@ -18,8 +21,21 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws ClassNotFoundException, SQLException {
-        // TODO code application logic here
-        playGame(6,1000);
+             DBHolder.nop();
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                System.out.println("Closing connection pool...");
+                DBHolder.close();
+            }
+        });  
+
+
+
+
+
+// TODO code application logic here
+        playGame(5,2000000);
 //        terVerSimpl5card();
    // creba();
     }
@@ -34,7 +50,7 @@ public class Main {
         for (int i = 0; i < count; i++) {
             System.out.println("======================" + i + "====================");
             stol = new Table(p);
-            stol.preflop();
+            stol.preflop(4,8);
             stol.flop();
             stol.tern();
             stol.river();

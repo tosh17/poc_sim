@@ -7,7 +7,9 @@ import java.sql.SQLException;
  * @author qasta
  */
 public class DBHolder {
-/*
+
+
+
     private DBHolder() {
     }
     
@@ -23,5 +25,5 @@ public class DBHolder {
     public static void close() {
         POOL.close();
     }
-*/
+
 }

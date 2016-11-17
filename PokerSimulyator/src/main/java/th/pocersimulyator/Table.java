@@ -1,9 +1,12 @@
 package th.pocersimulyator;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import th.simplsql.MyDb;
+import th.sql.DBHolder;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -32,28 +35,26 @@ public class Table {
         System.out.println("Перемешиваем колоду");
         karts = new Cards();
         karts.sort();
-        
+
     }
 
     Table(Player play[]) {
-        System.out.println();
-        System.out.println();
-        System.out.println("Добро пожаловать на игру " + play.length + " человека");
+//        System.out.println();
+//        System.out.println();
+//        System.out.println("Добро пожаловать на игру " + play.length + " человека");
         for (Player p : play) {
             players.add(p);
             p.setStatus(true);
             p.resetHand();
         }
-        System.out.println("Открываем новую и Перемешиваем колоду");
+//        System.out.println("Открываем новую и Перемешиваем колоду");
         karts = new Cards();
         karts.sort();
-        karts.chiter(0, play.length, 0, 13);
-
     }
 
     public void preflop() {
-        System.out.println("============== Префлоп=============");
-        System.out.println("Сдача карт ");
+//        System.out.println("============== Префлоп=============");
+//        System.out.println("Сдача карт ");
         for (int i = 0; i < 2; i++) {
             for (Player p : players) {
                 p.giveCard(karts.getCard());
@@ -62,7 +63,35 @@ public class Table {
         showAllHands();
     }
 
+    public void preflop(int x, int y) {
+//        System.out.println("============== Префлоп=============");
+//        System.out.println("Сдача карт ");
+        players.get(0).giveCard(karts.getCard(x));
+        players.get(0).giveCard(karts.getCard(y));
+        for (int i = 0; i < 2; i++) {
+            for (Player p : players) {
+                if (p != players.get(0)) {
+                    p.giveCard(karts.getCard());
+                }
+            }
+        }
+        showAllHands();
+    }
+
     public void flop() {
+//        System.out.println();
+//        System.out.println("============== Флоп=================");
+        onTable.add(karts.getCard());
+        onTable.add(karts.getCard());
+        onTable.add(karts.getCard());
+        for (Player p : players) {
+            p.givetable(onTable.get(0), onTable.get(1), onTable.get(2));
+        }
+        showAllHandsPlus();
+        showOnTables();
+    }
+
+    public void flop(int x, int y, int z) {
         System.out.println();
         System.out.println("============== Флоп=================");
         onTable.add(karts.getCard());
@@ -71,13 +100,13 @@ public class Table {
         for (Player p : players) {
             p.givetable(onTable.get(0), onTable.get(1), onTable.get(2));
         }
-       showAllHandsPlus();
+        showAllHandsPlus();
         showOnTables();
     }
 
     public void tern() {
-        System.out.println();
-        System.out.println("============== Терн=================");
+//        System.out.println();
+//        System.out.println("============== Терн=================");
         onTable.add(karts.getCard());
         for (Player p : players) {
             p.givetable(onTable.get(3));
@@ -87,13 +116,13 @@ public class Table {
     }
 
     public void river() {
-        System.out.println();
-        System.out.println("============== Ривер=================");
+//        System.out.println();
+//        System.out.println("============== Ривер=================");
         onTable.add(karts.getCard());
         for (Player p : players) {
             p.givetable(onTable.get(4));
         }
-       showAllHandsPlus();
+        showAllHandsPlus();
         showOnTables();
     }
 
@@ -120,14 +149,13 @@ public class Table {
 
             }
         }
-        System.out.println("============== Итог Игры=================");
+//        System.out.println("============== Итог Игры=================");
         int ilog[] = new int[16];
-        MyDb base = new MyDb();
         ilog[0] = players.size();
         for (Player p : players) {
             if (p.getStatus()) {
-                Combination tempComb=p.GetCombination();
-                System.out.println("Игрок " + p.getName() + " победил с  " + tempComb.getCombName());
+                Combination tempComb = p.GetCombination();
+//                System.out.println("Игрок " + p.getName() + " победил с  " + tempComb.getCombName());
                 p.win();
                 ilog[15] = tempComb.getCombinate();
                 //забиваем в лог выигрушную комбинацию
@@ -138,74 +166,87 @@ public class Table {
 
         }
 
-      //  for (Player p : players) {
-        Player p= players.get(0);
-            if (p.getStatus()) {
-                ilog[1] = 1;
-            } else {
-                ilog[1] = 0;
-            }
-            //забиваем текущую руку
-            for (int tempIndex = 2; tempIndex < 9; tempIndex++) {
-                ilog[tempIndex] = p.getCodeHand(tempIndex - 2);
-            }
-            ilog[9] = p.GetCombination().getCombinate();
+       for (Player p : players) {
+    //    Player p = players.get(0);
+        if (p.getStatus()) {
+            ilog[1] = 1;
+        } else {
+            ilog[1] = 0;
+        }
+        //забиваем текущую руку
+        for (int tempIndex = 2; tempIndex < 9; tempIndex++) {
+            ilog[tempIndex] = p.getCodeHand(tempIndex - 2);
+        }
+        ilog[9] = p.GetCombination().getCombinate();
 
-            //структуриреем данные
-            ArrayList<Integer> mass = new ArrayList<>();
-            //рука
-            mass.add(ilog[2]);
-            mass.add(ilog[3]);
-            mass = new Sortirovka(mass).puzyrek();
-            ilog[2] = mass.get(0);
-            ilog[3] = mass.get(1);
-            mass.clear();
+        //структуриреем данные
+        ArrayList<Integer> mass = new ArrayList<>();
+        //рука
+        mass.add(ilog[2]);
+        mass.add(ilog[3]);
+        mass = new Sortirovka(mass).puzyrek();
+        ilog[2] = mass.get(0);
+        ilog[3] = mass.get(1);
+        mass.clear();
 //            флоп
-            for (int tempIndex = 4; tempIndex < 7; tempIndex++) {
-                mass.add(ilog[tempIndex]);
-            }
-            mass = new Sortirovka(mass).puzyrek();
-            for (int tempIndex = 4; tempIndex < 7; tempIndex++) {
-                ilog[tempIndex] = mass.get(tempIndex - 4);
-            }
-            mass.clear();
+        for (int tempIndex = 4; tempIndex < 7; tempIndex++) {
+            mass.add(ilog[tempIndex]);
+        }
+        mass = new Sortirovka(mass).puzyrek();
+        for (int tempIndex = 4; tempIndex < 7; tempIndex++) {
+            ilog[tempIndex] = mass.get(tempIndex - 4);
+        }
+        mass.clear();
 //            выигравшая рука
-            for (int tempIndex = 10; tempIndex < 15; tempIndex++) {
-                mass.add(ilog[tempIndex]);
-            }
-            mass = new Sortirovka(mass).puzyrek();
-            for (int tempIndex = 10; tempIndex < 15; tempIndex++) {
-                ilog[tempIndex] = mass.get(tempIndex - 10);
-            }
-            mass.clear();
-            base.gameLog(ilog);
-  //                 }
-        base.close();
+        for (int tempIndex = 10; tempIndex < 15; tempIndex++) {
+            mass.add(ilog[tempIndex]);
+        }
+        mass = new Sortirovka(mass).puzyrek();
+        for (int tempIndex = 10; tempIndex < 15; tempIndex++) {
+            ilog[tempIndex] = mass.get(tempIndex - 10);
+        }
+        mass.clear();
+
+        try (Connection con = DBHolder.getConnection();){
+                gameLog(ilog, con);
+        } catch (SQLException e) {
+            e.printStackTrace(System.err);
+        }
+       }
+    }
+
+    private static void gameLog(int k[], Connection con) throws SQLException {
+
+        PreparedStatement pstmt = con.prepareStatement("INSERT INTO log " + "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+        for (int i = 0; i < 16; i++) {
+            pstmt.setInt(i + 1, k[i]);
+        }
+        int rowCount = pstmt.executeUpdate();
     }
 
     private void showAllHands() {
-        for (Player p : players) {
-            System.out.println("Игрок " + p.getName() + "  имеет ");
-            System.out.println(p.showHand());
-        }
+//        for (Player p : players) {
+//            System.out.println("Игрок " + p.getName() + "  имеет ");
+//            System.out.println(p.showHand());
+//        }
     }
 
     private void showOnTables() {
-        System.out.println("На столе");
-        for (OneCard c : onTable) {
-            System.out.print(c.getInfo());
-        }
-        System.out.println();
+//        System.out.println("На столе");
+//        for (OneCard c : onTable) {
+//            System.out.print(c.getInfo());
+//        }
+//        System.out.println();
     }
 
     private void showAllHandsPlus() {
-        for (Player p : players) {
-            System.out.println("Игрок " + p.getName() + "  имеет ");
-            System.out.println(p.showHand());
-            System.out.println("  Имеет комбинацию    " + p.GetCombination().getCombName());
-            // p.showTerVer();
-
-        }
+//        for (Player p : players) {
+//            System.out.println("Игрок " + p.getName() + "  имеет ");
+//            System.out.println(p.showHand());
+//            System.out.println("  Имеет комбинацию    " + p.GetCombination().getCombName());
+//            // p.showTerVer();
+//
+//        }
     }
 
 }
