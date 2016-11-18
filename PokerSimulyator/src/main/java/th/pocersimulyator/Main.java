@@ -21,23 +21,19 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws ClassNotFoundException, SQLException {
-             DBHolder.nop();
+        DBHolder.nop();
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
                 System.out.println("Closing connection pool...");
                 DBHolder.close();
             }
-        });  
-
-
-
-
+        });
 
 // TODO code application logic here
-        playGame(5,2000000);
-//        terVerSimpl5card();
-   // creba();
+        playGame(5, 10000000);
+
+        //  selectwin2();
     }
 
     private static void playGame(int play, int count) throws ClassNotFoundException, SQLException {
@@ -47,20 +43,27 @@ public class Main {
         for (int i = 1; i <= play; i++) {
             p[i - 1] = new Player("====№" + i + "=====");
         }
-        for (int i = 0; i < count; i++) {
-            System.out.println("======================" + i + "====================");
-            stol = new Table(p);
-            stol.preflop(4,8);
-            stol.flop();
-            stol.tern();
-            stol.river();
-            stol.itog();
-        }
-        System.out.println();
-        for (Player i : p) {
-            System.out.println("Игрок " + i.getName() + " имеет " + i.getWin() + " побед");
-        }
+        int x = 0;
+        int y = 1;
+        int z=0;
+        createlogflop(p.length, x, y);
+        do {
+            z++;
+            for (int i = 0; i < count; i++) {
+                System.out.println("===="+z+"==================" + i + "====================");
+                stol = new Table(p);
+                stol.preflop(x, y);
+                stol.flop();
+                stol.tern();
+                stol.river();
+                stol.itog();
+            }
+        }while (!logflop(p.length, x, y));
 
+        //   System.out.println();
+        //   for (Player i : p) {
+        //        System.out.println("Игрок " + i.getName() + " имеет " + i.getWin() + " побед");
+        //     }
     }
 
     private static void terVerSimpl2card() {
@@ -87,7 +90,7 @@ public class Main {
                 for (int i3 = i2 + 1; i3 < 50; i3++) {
                     for (int i4 = i3 + 1; i4 < 51; i4++) {
                         for (int i5 = i4 + 1; i5 < 52; i5++) {
-                            
+
                             System.out.println("  ");
                             System.out.println("  ");
                             System.out.println(c.getCard(i1) + " " + c.getCard(i2) + " " + c.getCard(i3) + " " + c.getCard(i4) + " " + c.getCard(i5));
@@ -108,9 +111,35 @@ public class Main {
         }
         base.close();
     }
-    private static void creba() throws SQLException, ClassNotFoundException{
-    MyDb base = new MyDb();
-    base.createBase(3, 0, 20);
-    base.close();
+
+    private static void creba() throws SQLException, ClassNotFoundException {
+        MyDb base = new MyDb();
+        base.createBase(3, 0, 20);
+        base.close();
+    }
+
+    private static void selectwin2() throws ClassNotFoundException, SQLException {
+        MyDb base = new MyDb();
+        for (int x = 0; x < 51; x++) {
+            for (int y = x + 1; y < 52; y++) {
+                base.selectWin2CardLog(x, y);
+            }
+        }
+
+        base.close();
+    }
+
+    private static boolean logflop(int p, int x, int y) throws ClassNotFoundException, SQLException {
+        boolean b;
+        MyDb base = new MyDb();
+        b = base.logFlop(p, x, y);
+        base.close();
+        return b;
+    }
+
+    private static void createlogflop(int p, int x, int y) throws ClassNotFoundException, SQLException {
+        MyDb base = new MyDb();
+        base.createFlopTable(p, x, y);
+        base.close();
     }
 }

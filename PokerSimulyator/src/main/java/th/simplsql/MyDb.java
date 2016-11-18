@@ -41,16 +41,26 @@ public class MyDb {
 
     }
 
+    public void selectWin2CardLog(int x, int y) throws SQLException {
+        pstmt = con.prepareStatement("select avg(lim.win) from (select * from log Where hand1=? And Hand2=?  limit 1000) as lim");
+        pstmt.setInt(1, x);
+        pstmt.setInt(2, y);
+        ResultSet rs = pstmt.executeQuery();
+        while (rs.next()) {
+            System.out.println("Карты " + new ConvertCard().getCard(x) + " & " + new ConvertCard().getCard(y) + " = " + rs.getString(1));
+            pstmt = con.prepareStatement("INSERT INTO card2winver " + "VALUES (?,?,?)");
+            pstmt.setInt(1, x);
+            pstmt.setInt(2, y);
+            pstmt.setFloat(3, rs.getFloat(1));
+            int rowCount = pstmt.executeUpdate();
+        }
+
+    }
+
     public void select() throws SQLException {
         pstmt = con.prepareStatement("SELECT \n"
-                + "  log.wincomb, \n"
-                + "  log.winhand1, \n"
-                + "  log.winhand2, \n"
-                + "  log.winhand3, \n"
-                + "  log.winhand4, \n"
-                + "  log.winhand5  \n"
-                + "FROM \n"
-                + "  public.log WHERE  log.flop1=23 and log.flop2=31 AND log.flop3=49 and log.river=9");
+                + "  avg(win) FROM \n"
+                + "  public.log WHERE  log.hand1=? and log.hand2=?");
         ResultSet rs = pstmt.executeQuery();
         while (rs.next()) {
             System.out.println(rs.getString(1));
@@ -107,13 +117,12 @@ public class MyDb {
     }
 
     public void createBase(int p, int c1, int c2) throws SQLException {
-      
+
         //String str = "p" + p + "i" + c1 + "j" + c2;
-        
     }
 
-    public void createFlopTable() throws SQLException{
-    pstmt = con.prepareStatement("CREATE TABLE flop ("
+    public void createFlopTable() throws SQLException {
+        pstmt = con.prepareStatement("CREATE TABLE flop ("
                 + "id smallint NOT NULL,"
                 + "flop1 smallint NOT NULL,"
                 + "flop2 smallint NOT NULL,"
@@ -137,7 +146,7 @@ public class MyDb {
         }
     }
 
-private boolean notik(int a[]) {
+    private boolean notik(int a[]) {
         int x = a.length;
         for (int i = 0; i < x - 1; i++) {
             for (int j = i + 1; j < x; j++) {
@@ -148,4 +157,119 @@ private boolean notik(int a[]) {
         }
         return true;
     }
+
+    public boolean logFlop(int p, int x, int y) throws SQLException {
+        int id;
+        int win;
+        ResultSet rs;
+        int rowCount;
+        int game;
+        boolean ok = true;
+        String str = "p" + p + "i" + x + "j" + y + "flopwin";
+
+        pstmt = con.prepareStatement("select * INTO temp" + str + " from log where hand1=? And hand2=?");
+        pstmt.setInt(1, x);
+        pstmt.setInt(2, y);
+        rowCount = pstmt.executeUpdate();
+
+        for (int i1 = 0; i1 < 50; i1++) {
+            for (int i2 = i1 + 1; i2 < 51; i2++) {
+                for (int i3 = i2 + 1; i3 < 52; i3++) {
+                    int a[] = {x, y, i1, i2, i3};
+                    if (notik(a)) {
+                        pstmt = con.prepareStatement("SELECT \n"
+                                + "  id FROM \n"
+                                + "  flop WHERE  flop1=? and flop2=? and flop3=?");
+                        pstmt.setInt(1, i1);
+                        pstmt.setInt(2, i2);
+                        pstmt.setInt(3, i3);
+                        rs = pstmt.executeQuery();
+                        id = 0;
+                        while (rs.next()) {
+                            id = rs.getInt(1);
+                        }
+                        pstmt = con.prepareStatement("SELECT \n"
+                                + "  sum(win),count(win) FROM \n"
+                                + "  temp"+str+" WHERE  flop1=? and flop2=? and flop3=?");
+                        pstmt.setInt(1, i1);
+                        pstmt.setInt(2, i2);
+                        pstmt.setInt(3, i3);
+                        rs = pstmt.executeQuery();
+                        win = 0;
+                        game = 0;
+                        while (rs.next()) {
+                            win = rs.getInt(1);
+                            game = rs.getInt(2);
+                        }
+                        pstmt = con.prepareStatement("SELECT \n"
+                                + "  win,game FROM \n"
+                                + " " + str + " WHERE  id=?");
+                        pstmt.setInt(1, id);
+                        rs = pstmt.executeQuery();
+                        while (rs.next()) {
+                            win += rs.getInt(1);
+                            game += rs.getInt(2);
+                        }
+                        pstmt = con.prepareStatement("UPDATE " + str + " SET win=?,game=? where id=?");
+
+                        pstmt.setInt(1, win);
+                        pstmt.setFloat(2, game);
+                        pstmt.setFloat(3, id);
+                        rowCount = pstmt.executeUpdate();
+                        if (win < 10000) {
+                            ok = false;
+                        }
+                    }
+                }
+
+            }
+        }
+
+        pstmt = con.prepareStatement("DROP TABLE temp" + str);
+        rowCount = pstmt.executeUpdate();
+        pstmt = con.prepareStatement("Delete from log where hand1=? And hand2=?");
+        pstmt.setInt(1, x);
+        pstmt.setInt(2, y);
+
+        rowCount = pstmt.executeUpdate();
+        return ok;
+    }
+
+    public void createFlopTable(int p, int x, int y) throws SQLException {
+        String str = "p" + p + "i" + x + "j" + y + "flopwin";
+        int id;
+        pstmt = con.prepareStatement("CREATE TABLE " + str + " ("
+                + "id smallint PRIMARY KEY,"
+                + "win smallint,"
+                + "game smallint)");
+        int rowCount = pstmt.executeUpdate();
+        for (int i1 = 0; i1 < 50; i1++) {
+            for (int i2 = i1 + 1; i2 < 51; i2++) {
+                for (int i3 = i2 + 1; i3 < 52; i3++) {
+                    int a[] = {x, y, i1, i2, i3};
+                    if (notik(a)) {
+                        pstmt = con.prepareStatement("SELECT \n"
+                                + "  id FROM \n"
+                                + "  public.flop WHERE  flop1=? and flop2=? and flop3=?");
+                        pstmt.setInt(1, i1);
+                        pstmt.setInt(2, i2);
+                        pstmt.setInt(3, i3);
+                        ResultSet rs = pstmt.executeQuery();
+                        id = 0;
+                        while (rs.next()) {
+                            id = rs.getInt(1);
+                        }
+                        pstmt = con.prepareStatement("INSERT INTO " + str + " VALUES (?,?,?)");
+
+                        pstmt.setInt(1, id);
+                        pstmt.setInt(2, 0);
+                        pstmt.setInt(3, 0);
+                        rowCount = pstmt.executeUpdate();
+                    }
+                }
+            }
+
+        }
+    }
+
 }

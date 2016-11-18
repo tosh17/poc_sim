@@ -9,7 +9,7 @@ package th.pocersimulyator;
  *
  * @author a_scherbakov
  */
-public class ConvertCard {
+public final class ConvertCard {
     //Туз Пик
 
     private final String[] suit = {"Worms", "Diamonds", "Baptize", "Peaks"};

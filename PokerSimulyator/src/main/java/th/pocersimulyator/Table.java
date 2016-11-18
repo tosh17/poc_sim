@@ -166,8 +166,8 @@ public class Table {
 
         }
 
-       for (Player p : players) {
-    //    Player p = players.get(0);
+     // for (Player p : players) {
+       Player p = players.get(0);
         if (p.getStatus()) {
             ilog[1] = 1;
         } else {
@@ -212,7 +212,7 @@ public class Table {
         } catch (SQLException e) {
             e.printStackTrace(System.err);
         }
-       }
+     //  }
     }
 
     private static void gameLog(int k[], Connection con) throws SQLException {
