@@ -31,7 +31,7 @@ public class Main {
         });
 
 // TODO code application logic here
-        playGame(5, 10000000);
+        playGame(5, 1000000);
 
         //  selectwin2();
     }
@@ -44,7 +44,7 @@ public class Main {
             p[i - 1] = new Player("====№" + i + "=====");
         }
         int x = 0;
-        int y = 1;
+        int y = 4;
         int z=0;
         createlogflop(p.length, x, y);
         do {
