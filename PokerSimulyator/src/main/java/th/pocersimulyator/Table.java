@@ -50,6 +50,7 @@ public class Table {
 //        System.out.println("Открываем новую и Перемешиваем колоду");
         karts = new Cards();
         karts.sort();
+       
     }
 
     public void preflop() {

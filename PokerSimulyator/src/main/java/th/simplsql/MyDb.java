@@ -208,7 +208,7 @@ public class MyDb {
 //                        while (rs.next()) {
 //                            id = rs.getInt(1);
 //                        }
-    id = flopId(i1, i2, i3);
+                        id = flopId(i1, i2, i3);
                         pstmt = con.prepareStatement("SELECT \n"
                                 + "  sum(win),count(win) FROM \n"
                                 + "  temp" + str + " WHERE  flop1=? and flop2=? and flop3=?");
@@ -257,6 +257,30 @@ public class MyDb {
         rowCount = pstmt.executeUpdate();
 
         return ok;
+    }
+
+    public boolean logFlopnew(int p, int x, int y) throws SQLException {
+        String str = "p" + p + "i" + x + "j" + y + "flopwin";
+
+        pstmt = con.prepareStatement("select floptoid(flop1,flop2,flop3) as id,sum(win) as win,count(win) as game into temp" + str + " From log group by id order by id");
+//        pstmt.setInt(1, x);
+//        pstmt.setInt(2, y);
+        int rowCount = pstmt.executeUpdate();
+
+        pstmt = con.prepareStatement(" update " + str + " as p set win=p.win+t.win,game=p.game+t.game from temp" + str + " as t where t.id=p.id");
+        rowCount = pstmt.executeUpdate();
+
+        pstmt = con.prepareStatement("SELECT min(game)FROM " + str);
+        ResultSet rs = pstmt.executeQuery();
+        int win = 0;
+        while (rs.next()) {
+            win = rs.getInt(1);
+        }
+        pstmt = con.prepareStatement("DROP TABLE temp" + str);
+        rowCount = pstmt.executeUpdate();
+        pstmt = con.prepareStatement("delete from log");
+        rowCount = pstmt.executeUpdate();
+        return win > 10000;
     }
 
     public void createFlopTable(int p, int x, int y) throws SQLException {

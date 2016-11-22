@@ -31,8 +31,9 @@ public class Main {
         });
 
 // TODO code application logic here
-        playGame(5, 1000000);
+        playGame(5, 200000);
 
+   
         //  selectwin2();
     }
 
@@ -44,14 +45,15 @@ public class Main {
             p[i - 1] = new Player("====№" + i + "=====");
         }
         int x = 0;
-        int y = 4;
+        int y = 5;
         int z=0;
-        createlogflop(p.length, x, y);
+   //     createlogflop(p.length, x, y);
         do {
             z++;
             for (int i = 0; i < count; i++) {
                 System.out.println("===="+z+"==================" + i + "====================");
                 stol = new Table(p);
+                for(int r=0;r<z%10;r++){stol.karts.sort();}
                 stol.preflop(x, y);
                 stol.flop();
                 stol.tern();
@@ -132,7 +134,7 @@ public class Main {
     private static boolean logflop(int p, int x, int y) throws ClassNotFoundException, SQLException {
         boolean b;
         MyDb base = new MyDb();
-        b = base.logFlop(p, x, y);
+        b = base.logFlopnew(p, x, y);
         base.close();
         return b;
     }
